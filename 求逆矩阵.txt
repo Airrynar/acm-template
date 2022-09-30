@@ -1,0 +1,159 @@
+//没判断不可逆情况
+#include<bits/stdc++.h>
+using namespace std;
+const double eps=1e-5;
+void print(vector<vector<double>>a){
+    int n=a.size(),m=a[0].size();
+    for (int i=0;i<n;i++){
+        for (int j=0;j<m;j++){
+            printf("%.4lf ",a[i][j]);//后面会有精度问题
+            //cout<<a[i][j]<<" ";
+        }cout<<endl;
+    }
+}
+vector<double> mul(vector<double>&a,vector<double>&b){
+    vector<double>t;
+    int n=a.size();
+    for (int i=0;i<n;i++){
+        t.push_back(a[i]*b[i]);
+    }
+    return t;
+}
+vector<double> mul(vector<double>&a,vector<vector<double>>&b){
+    vector<double>t;
+    int n=a.size();
+    for (int i=0;i<n;i++){
+        double tmp=0;
+        for (int j=0;j<n;j++)tmp+=a[i]*b[j][i];
+        t.push_back(tmp);
+    }
+    return t;
+}
+vector<vector<double>> mul(vector<vector<double>>&a,vector<vector<double>>&b){
+    int n=a.size();
+    vector<vector<double>>t;
+    for (int i=0;i<n;i++){
+        vector<double>tmp;
+        for (int j=0;j<n;j++){
+            double r=0;
+            for (int k=0;k<n;k++)r+=a[i][k]*b[k][j];
+            tmp.push_back(r);
+        }
+        t.push_back(tmp);
+    }
+    return t;
+}
+vector<double> sub(vector<double>&a,vector<double>&b){
+    vector<double>t;
+    int n=a.size();
+    for (int i=0;i<n;i++){
+        t.push_back(a[i]-b[i]);
+    }
+    return t;
+}
+vector<vector<double>> sub(vector<vector<double>>&a,vector<vector<double>>&b){
+    vector<vector<double>>t;
+    int n=a.size();
+    for (int i=0;i<n;i++){
+        vector<double>tmp;
+        for (int j=0;j<n;j++){
+            tmp.push_back(a[i][j]-b[i][j]);
+        }
+        t.push_back(tmp);
+    }
+    return t;
+}
+vector<double> add(vector<double>&a,vector<double>&b){
+    vector<double>t;
+    int n=a.size();
+    for (int i=0;i<n;i++){
+        t.push_back(a[i]+b[i]);
+    }
+    return t;
+}
+vector<vector<double>> add(vector<vector<double>>&a,vector<vector<double>>&b){
+    vector<vector<double>>t;
+    int n=a.size();
+    for (int i=0;i<n;i++){
+        vector<double>tmp;
+        for (int j=0;j<n;j++){
+            tmp.push_back(a[i][j]+b[i][j]);
+        }
+        t.push_back(tmp);
+    }
+    return t;
+}
+vector<vector<double>> inv(vector<vector<double>>&a){
+    vector<vector<double>>t=a,ans;
+    int n=a.size(),m=2*n;
+    for (int i=0;i<n;i++){
+        for (int j=0;j<n;j++){
+            t[i].push_back(i==j?1:0);
+        }
+    }
+    int i,j,k,p,r;
+    for (i=0,j=0;i<n&&j<m;i++,j++){
+        p=i;
+        for (k=i+1;k<n;k++){
+            if(fabs(t[k][j])>fabs(t[p][j])+eps)p=k;
+        }
+        if (p!=i){
+            for (k=0;k<m;k++)swap(t[p][k],t[i][k]);
+        }
+        if(fabs(t[i][j])<eps){
+            i--;continue;
+        }
+        for (r=j+1;r<m;r++){
+            t[i][r]/=t[i][j];
+        }
+        t[i][j]=1;
+        for(k=0;k<n;k++){
+            if(k!=i&&t[k][j]){
+                double e=t[k][j];
+                for(r=j;r<m;r++){
+                    t[k][r]-=e*t[i][r];
+                }
+            }
+        }
+    }
+    /*for (i=0;i<n;i++){
+        if (fabs(t[i][i])==0){
+            //不可逆
+        }
+    }*/
+    for (i=0;i<n;i++){
+        vector<double>tmp;
+        for (j=n;j<m;j++){
+            tmp.push_back(t[i][j]);
+        }
+        ans.push_back(tmp);
+    }
+    return ans;
+}
+signed main(){
+    int n,x;
+    cin>>n;
+    vector<vector<double>>b,a;
+    for (int i=0;i<n;i++){
+        vector<double>t;
+        for (int j=0;j<n;j++){
+            cin>>x;t.push_back(x);
+        }b.push_back(t);
+    }
+    a=inv(b);
+    //print(b);
+    print(a);
+    print(mul(b,a));
+    return 0;
+}
+/*
+3
+3 2 1
+3 1 5
+3 2 3
+4
+3 -2 0 -1
+0 2 2 1
+1 -2 -3 -2
+0 1 2 1
+*/
